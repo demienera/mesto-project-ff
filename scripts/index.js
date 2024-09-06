@@ -16,8 +16,7 @@ function createCard(item, deleteCard) {
   cardTitle.textContent = item.name;
 
   deleteCardButton.addEventListener('click', (event) => {
-    const currentButton = event.target;
-    deleteCard(currentButton)
+    deleteCard(event.target)
   })
 
   return card;
