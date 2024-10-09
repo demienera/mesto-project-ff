@@ -22,7 +22,7 @@ function closePopupOnEsc(event) {
 }
 
 function closePopupOnOverlay(popup) {
-  popup.addEventListener("click", (event) => {
+  popup.addEventListener("mousedown", (event) => {
     if (event.target === popup) {
       closePopup(popup);
     }
