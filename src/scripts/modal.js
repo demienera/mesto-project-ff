@@ -1,18 +1,25 @@
-function openPopup(popup) {
+export let cardToDelete;
+
+export function openPopup(popup) {
   if (popup) {
     popup.classList.add("popup_is-opened");
     document.addEventListener("keydown", closePopupOnEsc);
   }
 }
 
-function closePopup(popup) {
+export function openDeletePopup(card, popup) {
+  cardToDelete = card;
+  openPopup(popup);
+}
+
+export function closePopup(popup) {
   if (popup) {
     popup.classList.remove("popup_is-opened");
     document.removeEventListener("keydown", closePopupOnEsc);
   }
 }
 
-function closePopupOnEsc(event) {
+export function closePopupOnEsc(event) {
   if (event.key === "Escape") {
     const openedPopup = document.querySelector(".popup_is-opened");
     if (openedPopup) {
@@ -21,12 +28,10 @@ function closePopupOnEsc(event) {
   }
 }
 
-function closePopupOnOverlay(popup) {
+export function closePopupOnOverlay(popup) {
   popup.addEventListener("mousedown", (event) => {
     if (event.target === popup) {
       closePopup(popup);
     }
   });
 }
-
-export { openPopup, closePopup, closePopupOnOverlay };
