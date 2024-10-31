@@ -26,13 +26,7 @@ import {
   confirmDeleteButton,
 } from "./scripts/constants";
 import { createCard, handleLikeCard, deleteCard } from "./scripts/card";
-import {
-  openPopup,
-  closePopup,
-  closePopupOnOverlay,
-  cardToDelete,
-  openDeletePopup,
-} from "./scripts/modal";
+import { openPopup, closePopup, closePopupOnOverlay } from "./scripts/modal";
 import { enableValidation, clearValidation } from "./scripts/validation";
 import {
   getUserInfo,
@@ -43,12 +37,20 @@ import {
   checkImageUrl,
 } from "./scripts/api";
 
+let cardToDelete;
+let currentUserData;
+
 export function openImagePopup(link, name) {
   popupImage.src = link;
   popupImage.alt = name;
   popupCaption.textContent = name;
 
   openPopup(popupOpenImage);
+}
+
+function openDeletePopup(card, popup) {
+  cardToDelete = card;
+  openPopup(popup);
 }
 
 function handleFormSubmit(event) {
@@ -60,10 +62,11 @@ function handleFormSubmit(event) {
 
   updateTextOnButton(saveButton, "Сохранение...");
 
-  profileName.textContent = nameValue;
-  profileDescription.textContent = jobValue;
-
   editUserInfo(nameValue, jobValue)
+    .then((userData) => {
+      profileName.textContent = userData.name;
+      profileDescription.textContent = userData.about;
+    })
     .catch((error) => {
       console.error("Ошибка:", error);
     })
@@ -81,12 +84,12 @@ function handleFormSubmitImage(event) {
 
   updateTextOnButton(saveButton, "Сохранение...");
 
-  Promise.all([getUserInfo(), sendNewCard(newCard)])
-    .then(([userData, newCard]) => {
+  sendNewCard(newCard)
+    .then((createdCard) => {
       cardsList.prepend(
         createCard(
-          newCard,
-          userData,
+          createdCard,
+          currentUserData,
           handleLikeCard,
           openImagePopup,
           openDeletePopup
@@ -112,9 +115,10 @@ function handleFormSubmitAvatar(event) {
   checkImageUrl(avatarUrl)
     .then((validImage) => {
       if (validImage) {
-        editAvatarButton.style.backgroundImage = `url(${avatarUrl})`;
-        changeAvatar(avatarUrl);
-        closePopup(popupEditAvatar);
+        changeAvatar(avatarUrl).then((data) => {
+          editAvatarButton.style.backgroundImage = `url(${data.avatar})`;
+          closePopup(popupEditAvatar);
+        });
       }
     })
     .catch((error) => {
@@ -174,6 +178,7 @@ enableValidation(validationConfig);
 Promise.all([getUserInfo(), getCardList()])
   .then(([userData, cards]) => {
     renderUserProfile(userData);
+    currentUserData = userData;
 
     cards.forEach((card) => {
       cardsList.append(

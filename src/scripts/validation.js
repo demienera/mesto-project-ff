@@ -65,14 +65,20 @@ const hasInvalidInput = (inputList) => {
   });
 };
 
+const disableSubmitButton = (button, config) => {
+  button.classList.add(config.inactiveButtonClass);
+  button.disabled = true;
+};
+
 const toggleButtonState = (inputList, buttonElement, settings) => {
   if (
     hasInvalidInput(inputList) ||
     !inputList.every((input) => input.value.trim() !== "")
   ) {
-    buttonElement.classList.add(settings.inactiveButtonClass);
+    disableSubmitButton(buttonElement, settings);
   } else {
     buttonElement.classList.remove(settings.inactiveButtonClass);
+    buttonElement.disabled = false;
   }
 };
 
@@ -83,11 +89,11 @@ export const clearValidation = (formElement, settings) => {
   );
   inputList.forEach((inputElement) => {
     hideInputError(formElement, inputElement, settings);
-    inputElement.classList.remove(settings.inputErrorClass);
+    inputElement.setCustomValidity("");
   });
 
   const buttonElement = formElement.querySelector(
     settings.submitButtonSelector
   );
-  buttonElement.classList.add(settings.inactiveButtonClass);
+  disableSubmitButton(buttonElement, settings);
 };

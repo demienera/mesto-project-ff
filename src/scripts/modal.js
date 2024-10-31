@@ -1,15 +1,8 @@
-export let cardToDelete;
-
 export function openPopup(popup) {
   if (popup) {
     popup.classList.add("popup_is-opened");
     document.addEventListener("keydown", closePopupOnEsc);
   }
-}
-
-export function openDeletePopup(card, popup) {
-  cardToDelete = card;
-  openPopup(popup);
 }
 
 export function closePopup(popup) {
